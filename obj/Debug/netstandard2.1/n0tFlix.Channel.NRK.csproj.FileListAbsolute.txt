@@ -1,0 +1,9 @@
+E:\n0tFlix\n0tFlix.Channel.NRK\bin\Debug\netstandard2.1\n0tFlix.Channel.NRK.deps.json
+E:\n0tFlix\n0tFlix.Channel.NRK\bin\Debug\netstandard2.1\n0tFlix.Channel.NRK.dll
+E:\n0tFlix\n0tFlix.Channel.NRK\obj\Debug\netstandard2.1\n0tFlix.Channel.NRK.AssemblyInfoInputs.cache
+E:\n0tFlix\n0tFlix.Channel.NRK\obj\Debug\netstandard2.1\n0tFlix.Channel.NRK.AssemblyInfo.cs
+E:\n0tFlix\n0tFlix.Channel.NRK\obj\Debug\netstandard2.1\n0tFlix.Channel.NRK.csprojAssemblyReference.cache
+E:\n0tFlix\n0tFlix.Channel.NRK\bin\Debug\netstandard2.1\n0tFlix.Channel.NRK.pdb
+E:\n0tFlix\n0tFlix.Channel.NRK\obj\Debug\netstandard2.1\n0tFlix.Channel.NRK.csproj.CoreCompileInputs.cache
+E:\n0tFlix\n0tFlix.Channel.NRK\obj\Debug\netstandard2.1\n0tFlix.Channel.NRK.dll
+E:\n0tFlix\n0tFlix.Channel.NRK\obj\Debug\netstandard2.1\n0tFlix.Channel.NRK.pdb
