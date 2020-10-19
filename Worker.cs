@@ -7,6 +7,7 @@ using n0tFlix.Channel.NRK.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
@@ -25,12 +26,12 @@ namespace n0tFlix.Channel.NRK
         {
             if (memoryCache.TryGetValue("nrk-categories", out ChannelItemResult cachedValue))
             {
-                logger.LogDebug("Function={function} FolderId={folderId} Cache Hit", nameof(GetChannelCategoriesAsync), "nrk-categories");
+                logger.LogInformation("Function={function} FolderId={folderId} Cache Hit", nameof(GetChannelCategoriesAsync), "nrk-categories");
                 return cachedValue;
             }
             else
             {
-                logger.LogDebug("Function={function} FolderId={folderId} web download", nameof(GetChannelCategoriesAsync), "nrk-categories");
+                logger.LogInformation("Function={function} FolderId={folderId} web download", nameof(GetChannelCategoriesAsync), "nrk-categories");
                 HttpClient httpClient = new HttpClient();
                 string json = new StreamReader(await httpClient.GetStreamAsync("https://psapi.nrk.no/tv/pages")).ReadToEnd();
                 var root = Newtonsoft.Json.JsonConvert.DeserializeObject<Categories.root>(json);
@@ -58,12 +59,12 @@ namespace n0tFlix.Channel.NRK
         {
             if (memoryCache.TryGetValue("nrk-categories-" + query.FolderId, out ChannelItemResult cachedValue))
             {
-                logger.LogDebug("Function={function} FolderId={folderId} Cache Hit", nameof(GetCategoryItemsAsync), query.FolderId);
+                logger.LogInformation("Function={function} FolderId={folderId} Cache Hit", nameof(GetCategoryItemsAsync), query.FolderId);
                 return cachedValue;
             }
             else
             {
-                logger.LogDebug("Function={function} FolderId={folderId} web download", nameof(GetCategoryItemsAsync), query.FolderId);
+                logger.LogInformation("Function={function} FolderId={folderId} web download", nameof(GetCategoryItemsAsync), query.FolderId);
                 HttpClient httpClient = new HttpClient();
                 string json = new StreamReader(await httpClient.GetStreamAsync(query.FolderId)).ReadToEnd();
                 var root = Newtonsoft.Json.JsonConvert.DeserializeObject<CategoryItems.root>(json);
@@ -139,12 +140,12 @@ namespace n0tFlix.Channel.NRK
         {
             if (memoryCache.TryGetValue("nrk-categories-seasoninfo-" + query.FolderId, out ChannelItemResult cachedValue))
             {
-                logger.LogDebug("Function={function} FolderId={folderId} Cache Hit", nameof(GetSeasonInfoAsync), "nrk-categories-seasoninfo-" + query.FolderId);
+                logger.LogInformation("Function={function} FolderId={folderId} Cache Hit", nameof(GetSeasonInfoAsync), "nrk-categories-seasoninfo-" + query.FolderId);
                 return cachedValue;
             }
             else
             {
-                logger.LogDebug("Function={function} FolderId={folderId} web download", nameof(GetSeasonInfoAsync), "nrk-categories-seasoninfo-" + query.FolderId);
+                logger.LogInformation("Function={function} FolderId={folderId} web download", nameof(GetSeasonInfoAsync), "nrk-categories-seasoninfo-" + query.FolderId);
                 HttpClient httpClient = new HttpClient();
                 string json = new StreamReader(await httpClient.GetStreamAsync(query.FolderId)).ReadToEnd();
                 var root = Newtonsoft.Json.JsonConvert.DeserializeObject<SeasonInfo.root>(json);
@@ -175,12 +176,12 @@ namespace n0tFlix.Channel.NRK
         {
             if (memoryCache.TryGetValue("nrk-episodeinfo-" + query.FolderId, out ChannelItemResult cachedValue))
             {
-                logger.LogDebug("Function={function} FolderId={folderId} Cache Hit", nameof(GetSeasonInfoAsync), "nrk-episodeinfo-" + query.FolderId);
+                logger.LogInformation("Function={function} FolderId={folderId} Cache Hit", nameof(GetSeasonInfoAsync), "nrk-episodeinfo-" + query.FolderId);
                 return cachedValue;
             }
             else
             {
-                logger.LogDebug("Function={function} FolderId={folderId} web download", nameof(GetCategoryItemsAsync), "nrk-episodeinfo-" + query.FolderId);
+                logger.LogInformation("Function={function} FolderId={folderId} web download", nameof(GetCategoryItemsAsync), "nrk-episodeinfo-" + query.FolderId);
                 HttpClient httpClient = new HttpClient();
                 string json = new StreamReader(await httpClient.GetStreamAsync(query.FolderId)).ReadToEnd();
                 var root = Newtonsoft.Json.JsonConvert.DeserializeObject<EpisodeInfo.root>(json);
@@ -209,9 +210,33 @@ namespace n0tFlix.Channel.NRK
             return null;
         }
 
+        public static async Task<IEnumerable<ChannelItemInfo>> GetHeadlinersInfoAsync(ILogger logger, IMemoryCache memoryCache)
+        {
+            logger.LogInformation("Grabbing latest headliners");
+            HttpClient httpClient = new HttpClient();
+            string json = new StreamReader(await httpClient.GetStreamAsync("https://psapi.nrk.no/tv/headliners/default"), true).ReadToEnd();
+            var root = Newtonsoft.Json.JsonConvert.DeserializeObject<HeadlinersInfo.root>(json);
+            List<ChannelItemInfo> list = new List<ChannelItemInfo>();
+            foreach (var head in root.Headliners)
+            {
+                list.Add(new ChannelItemInfo()
+                {
+                    Name = head.Title,
+                    Id = "https://psapi.nrk.no" + head.Links.Seriespage.Href,
+                    Overview = head.SubTitle,
+                    ImageUrl = head.Images[0].Uri ?? head.Images[1].Uri ?? head.Images[2].Uri ?? head.Images[3].Uri ?? head.Images[4].Uri ?? head.Images[5].Uri,
+                    FolderType = ChannelFolderType.Container,
+                    Type = ChannelItemType.Folder,
+                    SeriesName = head.Title,
+                    MediaType = ChannelMediaType.Video,
+                });
+            }
+            return null;
+        }
+
         public static async Task<IEnumerable<MediaSourceInfo>> GetChannelItemMediaInfo(string id, ILogger logger, CancellationToken cancellationToken)
         {
-            logger.LogDebug("Grabbing stream data for " + id);
+            logger.LogInformation("Grabbing stream data for " + id);
             HttpClient httpClient = new HttpClient();
             string json = new StreamReader(await httpClient.GetStreamAsync(id), true).ReadToEnd();
             var root = Newtonsoft.Json.JsonConvert.DeserializeObject<PlayBackInfo.root>(json);
@@ -219,8 +244,7 @@ namespace n0tFlix.Channel.NRK
             {
                  new MediaSourceInfo()
                  {
-                     Name = root.Title,
-                     Path = root.MediaUrl,
+                     Path = root.Playable.Assets.First().Url,
                      Protocol = MediaBrowser.Model.MediaInfo.MediaProtocol.File,
                      Id = root.Id,
                       IsRemote = true,

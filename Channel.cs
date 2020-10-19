@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace n0tFlix.Channel.NRK
 {
-    public class Channel : IChannel, IRequiresMediaInfoCallback
+    public class Channel : IChannel, IRequiresMediaInfoCallback, ISupportsLatestMedia
     {
         public string Name => Plugin.Instance.Name;
 
@@ -65,7 +65,7 @@ namespace n0tFlix.Channel.NRK
 
         public async Task<DynamicImageResponse> GetChannelImage(ImageType type, CancellationToken cancellationToken)
         {
-            logger.LogDebug(nameof(GetChannelImage));
+            logger.LogInformation(nameof(GetChannelImage));
             if (type == ImageType.Thumb || type == ImageType.Primary || type == ImageType.Backdrop || type == ImageType.Menu)
             {
                 var name = "n0tFlix.Channels.NRK.Images.logo.png";
@@ -118,5 +118,8 @@ namespace n0tFlix.Channel.NRK
 
         public async Task<IEnumerable<MediaSourceInfo>> GetChannelItemMediaInfo(string id, CancellationToken cancellationToken)
             => await Worker.GetChannelItemMediaInfo(id, logger, cancellationToken);
+
+        public async Task<IEnumerable<ChannelItemInfo>> GetLatestMedia(ChannelLatestMediaSearch request, CancellationToken cancellationToken)
+         => await Worker.GetHeadlinersInfoAsync(logger, memoryCache);
     }
 }

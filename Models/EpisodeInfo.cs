@@ -5,7 +5,7 @@ using System.Text;
 
 namespace n0tFlix.Channel.NRK.Models
 {
-    internal class EpisodeInfo
+    public class EpisodeInfo
     {
         public class Self
         {
