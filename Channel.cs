@@ -68,7 +68,7 @@ namespace n0tFlix.Channel.NRK
             logger.LogInformation(nameof(GetChannelImage));
             if (type == ImageType.Thumb || type == ImageType.Primary || type == ImageType.Backdrop || type == ImageType.Menu)
             {
-                var name = "n0tFlix.Channels.NRK.Images.logo.png";
+                var name = "n0tFlix.Channel.NRK.Images.logo.png";
                 var response = new DynamicImageResponse
                 {
                     Format = ImageFormat.Png,
